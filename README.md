@@ -120,6 +120,10 @@ In this section our API has been modified to write to a database rather than sto
 
     docker run -d -p $HOST_PORT:5000 --name api api:v2
     ```
+    Windows
+    ```
+    docker run -d -p 5000:5000 --name api api:v2
+    ```
 
 
 * Check the status of the API
