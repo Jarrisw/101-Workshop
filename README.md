@@ -120,7 +120,13 @@ In this section our API has been modified to write to a database rather than sto
 
     docker run -d -p $HOST_PORT:5000 --name api api:v2
     ```
-
+  Windows
+    ```
+    docker rm -f api
+    ```
+    ```
+    docker run -d -p 5000:5000 --name api api:v2
+    ```
 
 * Check the status of the API
 
@@ -216,6 +222,10 @@ Note that you can also run debug from inside the Docker Desktop GUI. On a contai
       --network guestbook \
       postgres
     ```
+  Windows
+    ```
+    docker run -d --name db -e POSTGRES_USER=api -e POSTGRES_PASSWORD=Pa$$w0rd -e POSTGRES_DB=guestbook -p 5432:5432 --network guestbook postgres
+    ```
 
 
 * The API expects the database url as an environment variable. Remove the errored out container, and start a new instance passing in that URL. By placing both containers on the `guestbook` network, they can find each other by using DNS based service discovery
@@ -230,14 +240,23 @@ Note that you can also run debug from inside the Docker Desktop GUI. On a contai
       -e DB_URL="postgresql://api:Pa$$w0rd@db:5432/guestbook" \
       api:v2
     ```
-
+  Windows
+    ```
+    docker rm -f api
+    ```
+	```
+    docker run -d --name api --network guestbook -p %HOST_PORT%:5000 -e DB_URL="postgresql://api:Pa$$w0rd@db:5432/guestbook" api:v2
+    ```
 
 * Verify the API is working 
 
     ```
     curl http://localhost:$HOST_PORT/api/entries
     ```
-
+  Windows
+    ```
+    curl http://localhost:5000/api/entries
+    ```
 
 
     We get back a message that the API can connect to the database, but there were no records to return.`  `
@@ -247,14 +266,20 @@ Note that you can also run debug from inside the Docker Desktop GUI. On a contai
     ```
     curl -X POST http://localhost:$HOST_PORT/api/entries -H "Content-Type: application/json" -d '{"name": "John Doe", "message": "This is a test entry!"}'
     ```
-
+  Windows
+    ```
+    curl -X POST http://localhost:%HOST_PORT%/api/entries -H "Content-Type: application/json" -d "{\"name\": \"John Doe\", \"message\": \"This is a test entry!\"}"
+    ```
 
 * Verify the new record is in the database
 
     ```
     curl http://localhost:$HOST_PORT/api/entries
     ```
-
+  Windows
+    ```
+    curl http://localhost:5000/api/entries
+    ```
 
 * Right now the data is saved in the database, however the database’s data is not persisted between restarts (due to the default ephemeral nature of containers). Go ahead and restart the containers, and try to list the data. 
 
@@ -281,14 +306,29 @@ Note that you can also run debug from inside the Docker Desktop GUI. On a contai
       -e DB_URL="postgresql://api:Pa$$w0rd@db:5432/guestbook" \
       api:v2
     ```
-
+  Windows
+    ```
+    docker rm -f db
+    ```
+    ```
+    docker rm -f api
+    ```
+    ```
+    docker run -d --name db -e POSTGRES_USER=api -e POSTGRES_PASSWORD=Pa$$w0rd -e POSTGRES_DB=guestbook -p 5432:5432 --network guestbook postgres
+    ```
+    ```
+    docker run -d --name api --network guestbook -p %HOST_PORT%:5000 -e DB_URL="postgresql://api:Pa$$w0rd@db:5432/guestbook" api:v2
+    ```    
 
 * See if the added record is still there
 
     ```
     curl http://localhost:$HOST_PORT/api/entries
     ```
-
+  Windows
+    ```
+    curl http://localhost:5000/api/entries
+    ```
 
 
     As expected the recently added record is gone.
@@ -325,12 +365,28 @@ Note that you can also run debug from inside the Docker Desktop GUI. On a contai
       -e DB_URL="postgresql://api:Pa$$w0rd@db:5432/guestbook" \
       api:v2
     ```
-
+  Windows
+    ```
+    docker rm -f db
+    ```
+    ```
+    docker rm -f api
+    ```
+    ```
+    docker run -d --name db -e POSTGRES_USER=api -e POSTGRES_PASSWORD=Pa$$w0rd -e POSTGRES_DB=guestbook -p 5432:5432 --network guestbook -v db_data:/var/lib/postgresql/data postgres
+    ```
+    ```
+    docker run -d --name api --network guestbook -p 5000:5000 -e DB_URL="postgresql://api:Pa$$w0rd@db:5432/guestbook" api:v2
+    ```    
 
 * Add some data to the database
 
     ```
     curl -X POST http://localhost:$HOST_PORT/api/entries -H "Content-Type: application/json" -d '{"name": "John Doe", "message": "This is a test entry!"}'
+    ```
+  Windows
+    ```
+    curl -X POST http://localhost:%HOST_PORT%/api/entries -H "Content-Type: application/json" -d "{\"name\": \"John Doe\", \"message\": \"This is a test entry!\"}"
     ```
 
 * Verify the data was written
@@ -338,6 +394,10 @@ Note that you can also run debug from inside the Docker Desktop GUI. On a contai
    ```
    curl http://localhost:$HOST_PORT/api/entries
    ```
+  Windows
+    ```
+    curl http://localhost:5000/api/entries
+    ```
 
 * Stop and restart the containers
 
@@ -365,13 +425,29 @@ Note that you can also run debug from inside the Docker Desktop GUI. On a contai
       -e DB_URL="postgresql://api:Pa$$w0rd@db:5432/guestbook" \
       api:v2
     ```
-
+  Windows
+    ```
+    docker rm -f db
+    ```
+    ```
+    docker rm -f api
+    ```
+    ```
+    docker run -d --name db -e POSTGRES_USER=api -e POSTGRES_PASSWORD=Pa$$w0rd -e POSTGRES_DB=guestbook -p 5432:5432 --network guestbook -v db_data:/var/lib/postgresql/data postgres
+    ```
+    ```
+    docker run -d --name api --network guestbook -p 5000:5000 -e DB_URL="postgresql://api:Pa$$w0rd@db:5432/guestbook" api:v2
+    ```    
 
 * Verify the data persisted across the restart this time
 
    ```
    curl http://localhost:$HOST_PORT/api/entries
    ```
+  Windows
+    ```
+    curl http://localhost:5000/api/entries
+    ```
 
 * Remove the application containers, network, and volume
 
