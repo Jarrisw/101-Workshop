@@ -29,9 +29,28 @@ In this section you will clone the GitHub repository for our demo application, a
 
 * The application we are using runs on port 5000 by default, however it could be that port is not available on your system. To accomodate we use an environment variable `HOST_PORT` to set the right port we will use on our local machine. If port 5000 is not availble on your machine, change the value below to one that works for you otherwise just copy and paste the command below as is. 
 
+For Linux and Mac: 
+
   ```bash
   HOST_PORT=5000
   ```
+
+For Windows
+
+```bash
+set HOST_PORT=5000
+```
+
+	***Environment Variables in Windows***
+	
+	As you saw above Windows treats environment variables differently than Linux and Mac. In the steps below you will see lines like
+	
+	```bash
+	docker run -d -p $HOST_PORT:5000 api:v1
+	```
+	
+	If you are on Windows where ever you see ***$HOST_PORT*** you need to replace that with ***%HOST_PORT%***
+
 
 * If you have Node and NPM installed on your local machine you can test the application to make sure it’s working.  If you do not have Node and NPM installed skip to the next section “***Build the application image***” 
 
